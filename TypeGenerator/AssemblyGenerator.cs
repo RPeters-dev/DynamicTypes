@@ -27,14 +27,6 @@ namespace DynamicTypes
 
         #endregion
 
-        #region Constructors
-
-        protected AssemblyGenerator()
-        {
-        }
-
-        #endregion
-
         #region Methods
 
         /// <summary>

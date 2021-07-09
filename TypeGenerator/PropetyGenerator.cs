@@ -15,16 +15,26 @@ namespace DynamicTypes
         /// <summary>
         /// Name of the Property
         /// </summary>
-        public string PeoprtyName { get; set; }
+        public string PropertyName { get; set; }
         /// <summary>
-        /// The Field containing the value
+        /// The FieldGenerator of this class
         /// </summary>
-        public FieldGenerator Field { get; set; }
+        protected internal FieldGenerator internalField { get; set; }
+
+        /// <summary>
+        /// The PropertyBuilder of this class
+        /// </summary>
+        protected internal PropertyBuilder internalProperty { get; set; }
 
         /// <summary>
         /// The Property that is Generated (Only available after Compiling) 
         /// </summary>
-        public PropertyBuilder Property { get; set; }
+        public PropertyInfo Property { get; set; }
+
+        /// <summary>
+        /// The Field that is Generated (Only available after Compiling) 
+        /// </summary>
+        public FieldInfo Field { get; set; }
 
         #endregion
 
@@ -37,8 +47,8 @@ namespace DynamicTypes
         /// <param name="type">Type of the Property</param>
         public PropetyGenerator(string name, Type type) : base(type)
         {
-            PeoprtyName = name;
-            Field = new FieldGenerator("m_" + name, type);
+            PropertyName = name;
+            internalField = new FieldGenerator("m_" + name, type);
         }
 
         #endregion
@@ -48,29 +58,57 @@ namespace DynamicTypes
         /// <inheritdoc/>
         public override void DefineMember(TypeBuilder tb)
         {
-            Field.DefineMember(tb);
+            internalField.DefineMember(tb);
 
-            Property = tb.DefineProperty(PeoprtyName, PropertyAttributes.HasDefault, Type, null);
-            var getSetAttr = MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig;
+            internalProperty = tb.DefineProperty(PropertyName, PropertyAttributes.HasDefault, Type, null);
+
+            foreach (var item in Attributes)
             {
-                var mbGet = tb.DefineMethod("get_" + PeoprtyName, getSetAttr, Type, Type.EmptyTypes);
-                var getIL = mbGet.GetILGenerator();
-                getIL.Emit(OpCodes.Ldarg_0);
-                getIL.Emit(OpCodes.Ldfld, Field.FieldBuilder);
-                getIL.Emit(OpCodes.Ret);
-                Property.SetGetMethod(mbGet);
+                internalProperty.SetCustomAttribute(item.AttributeBuilder);
+            }
+
+            var getSetAttr = MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig;
+            if(OverrideDefinition != null)
+            {
+                getSetAttr = getSetAttr | MethodAttributes.Virtual;
             }
             {
-                var mbSet = tb.DefineMethod("set_" + PeoprtyName, getSetAttr, null, new Type[] { Type });
+                var mbGet = tb.DefineMethod("get_" + PropertyName, getSetAttr, Type, Type.EmptyTypes);
+                var getIL = mbGet.GetILGenerator();
+                getIL.Emit(OpCodes.Ldarg_0);
+                getIL.Emit(OpCodes.Ldfld, internalField.internalField);
+                getIL.Emit(OpCodes.Ret);
+                internalProperty.SetGetMethod(mbGet);
+
+                if (OverrideDefinition != null)
+                {
+                    tb.DefineMethodOverride(mbGet, OverrideDefinition.GetMethod("get_" + PropertyName));
+                }
+            }
+            {
+                var mbSet = tb.DefineMethod("set_" + PropertyName, getSetAttr, null, new Type[] { Type });
                 var setIL = mbSet.GetILGenerator();
                 setIL.Emit(OpCodes.Ldarg_0);
                 setIL.Emit(OpCodes.Ldarg_1);
-                setIL.Emit(OpCodes.Stfld, Field.FieldBuilder);
+                setIL.Emit(OpCodes.Stfld, internalField.internalField);
                 setIL.Emit(OpCodes.Ret);
-                Property.SetSetMethod(mbSet);
+                internalProperty.SetSetMethod(mbSet);
+
+                if (OverrideDefinition != null)
+                {
+                    tb.DefineMethodOverride(mbSet, OverrideDefinition.GetMethod("set_" + PropertyName));
+                }
             }
+
         }
 
+
+        public override void Compiled(TypeGenerator cg)
+        {
+            Property = cg.Type.GetProperty(PropertyName);
+            Field = cg.Type.GetField(internalField.FieldName);
+            base.Compiled(cg);
+        }
         #endregion
 
     }

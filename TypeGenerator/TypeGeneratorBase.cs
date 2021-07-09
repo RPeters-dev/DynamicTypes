@@ -33,6 +33,10 @@ namespace DynamicTypes
         /// </summary>
         public List<MemberGenerator> Members { get; } = new List<MemberGenerator>();
         /// <summary>
+        /// Attributes that will be attached to the Type
+        /// </summary>
+        public List<AttributeGenerator> Attributes { get; } = new List<AttributeGenerator>();
+        /// <summary>
         /// Superclass of the new type
         /// </summary>
         public Type BaseType { get; }
@@ -68,11 +72,16 @@ namespace DynamicTypes
         /// <summary>
         /// Compiles the Type
         /// </summary>
-        internal void Compile()
+        public Type Compile()
         {
             AssemblyBuilder.Initialize();
 
             var tb = AssemblyBuilder.Module.DefineType(TypeName, TypeAttributes.Public, BaseType);
+
+            foreach (var item in Attributes)
+            {
+                tb.SetCustomAttribute(item.AttributeBuilder);
+            }
 
             foreach (var item in InterfaceImplementations)
             {
@@ -90,6 +99,8 @@ namespace DynamicTypes
             {
                 item.Compiled(this);
             }
+
+            return Type;
         }
 
         #endregion

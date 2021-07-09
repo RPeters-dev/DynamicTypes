@@ -42,7 +42,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyGenerator.cs" />
-    <Compile Include="COMWrapper.cs" />
+    <Compile Include="AttributeGenerator.cs" />
+    <Compile Include="Com\COMWrapper.cs" />
+    <Compile Include="DetourMethodWrapper.cs" />
+    <Compile Include="Com\DetourMethodWrapper_ComObject.cs" />
+    <Compile Include="DetourPeoprtyWrapper.cs" />
+    <Compile Include="Com\DetourPeoprtyWrapper_ComObject.cs" />
+    <Compile Include="IDisposableGenerator.cs" />
+    <Compile Include="Com\IDisposable_ComObject.cs" />
+    <Compile Include="FinalizeDispose.cs" />
     <Compile Include="DefaultAssemblyGenerator.cs" />
     <Compile Include="DetourMethodGenerator.cs" />
     <Compile Include="DetourPeoprtyGenerator.cs" />

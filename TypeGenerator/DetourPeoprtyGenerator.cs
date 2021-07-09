@@ -87,7 +87,7 @@ namespace DynamicTypes
                 var getIL = mbGet.GetILGenerator();
 
                 getIL.Emit(OpCodes.Ldarg_0);
-                getIL.Emit(OpCodes.Ldfld, SourceObjcet.FieldBuilder);
+                getIL.Emit(OpCodes.Ldfld, SourceObjcet.internalField);
                 for (int i = 0; i < IndexParameter.Length; i++)
                 {
                     getIL.Emit(OpCodes.Ldarg_S, i + 1);
@@ -108,7 +108,7 @@ namespace DynamicTypes
                 var setIL = mbSet.GetILGenerator();
 
                 setIL.Emit(OpCodes.Ldarg_0);
-                setIL.Emit(OpCodes.Ldfld, SourceObjcet.FieldBuilder);
+                setIL.Emit(OpCodes.Ldfld, SourceObjcet.internalField);
                 for (int i = 0; i < IndexParameter.Length + 1; i++)
                 {
                     setIL.Emit(OpCodes.Ldarg_S, i + 1);

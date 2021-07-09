@@ -29,10 +29,7 @@ namespace DynamicTypes
         /// The Method that is Generated (Only available after Compiling) 
         /// </summary>
         public MethodInfo Method { get; private set; }
-        /// <summary>
-        /// The Member that contains the Property used in case of Interfaces / Abstract etc.
-        /// </summary>
-        public Type OverrideDefinition { get; internal set; }
+   
 
         #endregion
 
@@ -67,7 +64,7 @@ namespace DynamicTypes
             var local = IL.DeclareLocal(typeof(object));
 
             IL.Emit(OpCodes.Ldarg_0);
-            IL.Emit(OpCodes.Ldfld, SourceObjcet.FieldBuilder);
+            IL.Emit(OpCodes.Ldfld, SourceObjcet.internalField);
             int i = 1;
             foreach (var item in Source.GetParameters())
             {

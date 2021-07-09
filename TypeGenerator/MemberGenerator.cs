@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection.Emit;
 
 namespace DynamicTypes
@@ -17,9 +18,19 @@ namespace DynamicTypes
         public Type Type { get; set; }
 
         /// <summary>
+        /// Attributes that will be attached to the Member
+        /// </summary>
+        public List<AttributeGenerator> Attributes { get; } = new List<AttributeGenerator>();
+
+        /// <summary>
         /// Some members have to be defined Early. Please use this to Check for Redundancies 
         /// </summary>
         public bool Defined { get; set; }
+
+        /// <summary>
+        /// The Member that contains the Property used in case of Interfaces / Abstract etc.
+        /// </summary>
+        public Type OverrideDefinition { get; set; }
 
         #endregion
 

@@ -15,7 +15,7 @@ namespace DynamicTypes
         /// <summary>
         /// The Builder of the Field
         /// </summary>
-        internal FieldBuilder FieldBuilder { get; set; }
+        protected internal FieldBuilder internalField { get; set; }
         /// <summary>
         /// Name of the Field
         /// </summary>
@@ -53,7 +53,12 @@ namespace DynamicTypes
         /// <inheritdoc/>
         public override void DefineMember(TypeBuilder tb)
         {
-            FieldBuilder = tb.DefineField(FieldName, Type, FieldAttributes.Private);
+            internalField = tb.DefineField(FieldName, Type, FieldAttributes.Private);
+
+            foreach (var item in Attributes)
+            {
+                internalField.SetCustomAttribute(item.AttributeBuilder);
+            }
         }
 
         #endregion
