@@ -7,7 +7,7 @@ namespace DynamicTypes
     /// <summary>
     /// A Simple generator for Flat Properties eg. get; set;
     /// </summary>
-    public class PropetyGenerator : MemberGenerator
+    public class PropertyGenerator : MemberGenerator
     {
 
         #region Properties
@@ -41,11 +41,11 @@ namespace DynamicTypes
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of <see cref="PropetyGenerator"/>
+        /// Initializes a new instance of <see cref="PropertyGenerator"/>
         /// </summary>
         /// <param name="name">Name of the Property</param>
         /// <param name="type">Type of the Property</param>
-        public PropetyGenerator(string name, Type type) : base(type)
+        public PropertyGenerator(string name, Type type) : base(type)
         {
             PropertyName = name;
             internalField = new FieldGenerator("m_" + name, type);

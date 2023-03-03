@@ -31,7 +31,7 @@ namespace DynamicTypes
         /// <summary>
         /// Members that will be Defined during the Compile call
         /// </summary>
-        public List<MemberGenerator> Members { get; } = new List<MemberGenerator>();
+        public List<MemberGenerator> Members { get; set; } = new List<MemberGenerator>();
         /// <summary>
         /// Attributes that will be attached to the Type
         /// </summary>

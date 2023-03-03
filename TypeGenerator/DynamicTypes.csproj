@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DynamicTypes</RootNamespace>
     <AssemblyName>DynamicTypes</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -48,6 +49,8 @@
     <Compile Include="Com\DetourMethodWrapper_ComObject.cs" />
     <Compile Include="DetourPeoprtyWrapper.cs" />
     <Compile Include="Com\DetourPeoprtyWrapper_ComObject.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Tools.cs" />
     <Compile Include="IDisposableGenerator.cs" />
     <Compile Include="Com\IDisposable_ComObject.cs" />
     <Compile Include="FinalizeDispose.cs" />
