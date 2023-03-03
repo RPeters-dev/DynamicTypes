@@ -1,6 +1,0 @@
-C:\Users\rpeters.WREDEGMBH\source\repos\TypeGenerator\TypeGenerator\bin\Debug\TypeGenerator.dll
-C:\Users\rpeters.WREDEGMBH\source\repos\TypeGenerator\TypeGenerator\bin\Debug\TypeGenerator.pdb
-C:\Users\rpeters.WREDEGMBH\source\repos\TypeGenerator\TypeGenerator\obj\Debug\TypeGenerator.csprojAssemblyReference.cache
-C:\Users\rpeters.WREDEGMBH\source\repos\TypeGenerator\TypeGenerator\obj\Debug\TypeGenerator.csproj.CoreCompileInputs.cache
-C:\Users\rpeters.WREDEGMBH\source\repos\TypeGenerator\TypeGenerator\obj\Debug\TypeGenerator.dll
-C:\Users\rpeters.WREDEGMBH\source\repos\TypeGenerator\TypeGenerator\obj\Debug\TypeGenerator.pdb
