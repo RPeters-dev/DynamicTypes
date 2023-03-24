@@ -9,6 +9,10 @@ namespace DynamicTypes
     /// </summary>
     public abstract class MemberGenerator
     {
+        public MemberGenerator()
+        {
+
+        }
 
         #region Properties
 
@@ -40,7 +44,7 @@ namespace DynamicTypes
         /// Initializes a new instance of <see cref="MemberGenerator"/>
         /// </summary>
         /// <param name="type">A type is always helpful for all Actions u Plan, can be null</param>
-        protected MemberGenerator(Type type)
+        protected MemberGenerator(Type? type)
         {
             Type = type;
         }

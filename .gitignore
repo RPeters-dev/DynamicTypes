@@ -1,3 +1,5 @@
-/TypeGenerator/bin
-/TypeGenerator/obj
-/TypeGenerator/obj
+/DynamicTypes/bin
+/DynamicTypes/obj
+/packages
+/.vs
+/

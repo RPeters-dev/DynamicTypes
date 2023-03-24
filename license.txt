@@ -1,0 +1,25 @@
+License Agreement for the Dynamictypes Project
+
+Version 1.0, last updated on March 24, 2023
+
+Pen License Terms:
+
+This is a pen license agreement between the Dynamictypes Project (hereinafter referred to as "Project") and the holder of this license (hereinafter referred to as "Licensee"). By obtaining this license, Licensee agrees to comply with the following terms:
+
+Licensee has the right to modify, adapt, and extend the source code provided by this Project to create dynamic types in their own projects.
+
+Licensee has the right to use the source code for their own purposes, as long as they acknowledge the Project as the source and include a copy of this license agreement in any project that is based on the source code.
+
+Licensee may not use the source code for commercial purposes unless they have obtained written permission from the Project.
+
+Licensee may not sell, license, rent, or otherwise distribute the source code.
+
+Licensee is liable for any damages that arise from the use of the source code.
+
+The Project reserves the right to change or update this license agreement at any time. Licensee is responsible for reviewing the updated terms.
+
+This license agreement applies for the entire lifespan of the Project.
+
+This license agreement is governed by the laws of the country where the Project is headquartered.
+
+By obtaining this license, Licensee agrees to abide by the terms of this agreement.

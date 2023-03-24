@@ -4,6 +4,28 @@ using System.Reflection.Emit;
 
 namespace DynamicTypes
 {
+
+    public class iPropertyGenerator<T> : PropertyGenerator
+    {
+        public iPropertyGenerator(string name) : base(name, null)
+        {
+            OverrideDefinition = typeof(T);
+            var p = typeof(T).GetProperty(name);
+
+            Type = p.PropertyType;
+            internalField = new FieldGenerator("m_" + name, Type);
+
+            Get = p.GetMethod != null;
+            Set = p.GetMethod != null;
+        }
+    }
+    public class PropertyGenerator<T> : PropertyGenerator
+    {
+        public PropertyGenerator(string name) : base(name, typeof(T))
+        {
+        }
+    }
+
     /// <summary>
     /// A Simple generator for Flat Properties eg. get; set;
     /// </summary>
@@ -36,9 +58,24 @@ namespace DynamicTypes
         /// </summary>
         public FieldInfo Field { get; set; }
 
+        /// <summary>
+        /// Defines if a getProperty will be defined
+        /// </summary>
+        public bool Get { get; set; } = true;
+        /// <summary>
+        /// Defines if a setProperty will be defined
+        /// </summary>
+        public bool Set { get; set; } = true;
+
+
         #endregion
 
         #region Constructors
+
+        public PropertyGenerator()
+        {
+
+        }
 
         /// <summary>
         /// Initializes a new instance of <see cref="PropertyGenerator"/>
@@ -72,6 +109,7 @@ namespace DynamicTypes
             {
                 getSetAttr = getSetAttr | MethodAttributes.Virtual;
             }
+            if(Get)
             {
                 var mbGet = tb.DefineMethod("get_" + PropertyName, getSetAttr, Type, Type.EmptyTypes);
                 var getIL = mbGet.GetILGenerator();
@@ -85,6 +123,7 @@ namespace DynamicTypes
                     tb.DefineMethodOverride(mbGet, OverrideDefinition.GetMethod("get_" + PropertyName));
                 }
             }
+            if(Set)
             {
                 var mbSet = tb.DefineMethod("set_" + PropertyName, getSetAttr, null, new Type[] { Type });
                 var setIL = mbSet.GetILGenerator();

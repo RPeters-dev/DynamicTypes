@@ -9,6 +9,13 @@ using System.Threading.Tasks;
 
 namespace DynamicTypes
 {
+    public class AttributeGenerator<T> : AttributeGenerator where T : Attribute
+    {
+        public AttributeGenerator(params object[] parameter) : base(typeof(T), parameter) 
+        {
+        }
+    }
+
     public class AttributeGenerator
     {
         ConstructorInfo Constructor { get; set; }

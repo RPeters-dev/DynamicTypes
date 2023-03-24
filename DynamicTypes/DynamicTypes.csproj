@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>DynamicTypes</Title>
+    <Authors>Robin Peters</Authors>
+    <Company />
+    <Description>Provides Classes to Create .Net Types at runtime</Description>
+    <Copyright>Robin Peters</Copyright>
+    <PackageProjectUrl>https://github.com/Discrepantia/DynamicTypes</PackageProjectUrl>
+    <ApplicationIcon>DynamicTypesimg.ico</ApplicationIcon>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>reflection;runtimetypes;dynamictypes</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="DynamicTypesimg.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\license.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
