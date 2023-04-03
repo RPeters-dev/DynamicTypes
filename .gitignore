@@ -1,5 +1,10 @@
 /DynamicTypes/bin
 /DynamicTypes/obj
+/DynamicTypes.Utilities/bin
+/DynamicTypes.Utilities/obj
+/UnitTests/bin
+/UnitTests/obj
+/TestApp
 /packages
 /.vs
 /

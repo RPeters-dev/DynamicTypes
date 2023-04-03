@@ -36,10 +36,6 @@ namespace DynamicTypes
         /// The Property that is Generated (Only available after Compiling)
         /// </summary>
         public PropertyInfo Property { get; private set; }
-        /// <summary>
-        /// The Member that contains the Property used in case of Interfaces / Abstract etc.
-        /// </summary>
-        public Type OverrideDefinition { get; internal set; }
 
         #endregion
 

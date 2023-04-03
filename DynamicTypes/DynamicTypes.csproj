@@ -15,17 +15,24 @@
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>reflection;runtimetypes;dynamictypes</PackageTags>
+    <FileVersion></FileVersion>
+    <AssemblyVersion></AssemblyVersion>
+    <Version>1.0.1</Version>
+    <PackageIcon>DynamicTypesimg.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Discrepantia/DynamicTypes</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="DynamicTypesimg.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\license.txt">
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+    <EmbeddedResource Include="..\DynamicTypesimg.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
-    </None>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\license.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </EmbeddedResource>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>

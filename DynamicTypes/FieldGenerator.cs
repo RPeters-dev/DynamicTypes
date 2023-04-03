@@ -4,6 +4,13 @@ using System.Reflection.Emit;
 
 namespace DynamicTypes
 {
+    public class FieldGenerator<T> : FieldGenerator
+    {
+        public FieldGenerator(string name) : base(name, typeof(T))
+        {
+        }
+    }
+
     /// <summary>
     /// A Simple Generator for a Field
     /// </summary>
@@ -15,7 +22,7 @@ namespace DynamicTypes
         /// <summary>
         /// The Builder of the Field
         /// </summary>
-        protected internal FieldBuilder internalField { get; set; }
+        public FieldBuilder internalField { get; set; }
         /// <summary>
         /// Name of the Field
         /// </summary>
@@ -25,6 +32,7 @@ namespace DynamicTypes
         /// </summary>
         public FieldInfo Field { get; private set; }
 
+        public FieldAttributes FieldAttributes { get; set; } = FieldAttributes.Private;
         #endregion
 
         #region Constructors
@@ -53,7 +61,7 @@ namespace DynamicTypes
         /// <inheritdoc/>
         public override void DefineMember(TypeBuilder tb)
         {
-            internalField = tb.DefineField(FieldName, Type, FieldAttributes.Private);
+            internalField = tb.DefineField(FieldName, Type, FieldAttributes);
 
             foreach (var item in Attributes)
             {

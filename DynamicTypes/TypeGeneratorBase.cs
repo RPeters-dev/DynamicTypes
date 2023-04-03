@@ -47,7 +47,14 @@ namespace DynamicTypes
         /// <summary>
         /// The name of the Type that will be generated
         /// </summary>
-        public string TypeName { get; }
+        public string TypeName { get; set; }
+
+        /// <summary>
+        /// Enshures that a unique Type name is used, makes it easyer to debug
+        /// </summary>
+        public bool EnshureUniqueName { get; set; } = true;
+
+        public Dictionary<string, int> TypeNames = new Dictionary<string, int>();
 
         #endregion
 
@@ -59,7 +66,7 @@ namespace DynamicTypes
 
         #region Constructors
 
-        public TypeGenerator(string typeName = "MyDynamicType", Type baseType = null)
+        public TypeGenerator(string typeName = "<>DynamicType", Type baseType = null)
         {
             TypeName = typeName;
             BaseType = baseType;
@@ -69,6 +76,18 @@ namespace DynamicTypes
 
         #region Methods
 
+        public string GetTypeName()
+        {
+            var tnk = string.Format(TypeName, null, Members.Count);
+
+            if (!TypeNames.ContainsKey(tnk))
+                TypeNames[tnk] = 0;
+            else
+                TypeNames[tnk]++;
+
+            return !EnshureUniqueName ? TypeName : string.Format(TypeName + "_{0}`{1}", TypeNames[tnk], Members.Count);
+        }
+
         /// <summary>
         /// Compiles the Type
         /// </summary>
@@ -76,7 +95,7 @@ namespace DynamicTypes
         {
             AssemblyBuilder.Initialize();
 
-            var tb = AssemblyBuilder.Module.DefineType(TypeName, TypeAttributes.Public, BaseType);
+            var tb = AssemblyBuilder.Module.DefineType(GetTypeName(), TypeAttributes.Public, BaseType);
 
             foreach (var item in Attributes)
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -13,7 +14,7 @@ namespace DynamicTypes
             var p = typeof(T).GetProperty(name);
 
             Type = p.PropertyType;
-            internalField = new FieldGenerator("m_" + name, Type);
+            BackingField = new FieldGenerator("m_" + name, Type);
 
             Get = p.GetMethod != null;
             Set = p.GetMethod != null;
@@ -29,6 +30,7 @@ namespace DynamicTypes
     /// <summary>
     /// A Simple generator for Flat Properties eg. get; set;
     /// </summary>
+    [DebuggerDisplay("PropertyGenerator {PropertyName} {Type.FullName}")]
     public class PropertyGenerator : MemberGenerator
     {
 
@@ -41,7 +43,7 @@ namespace DynamicTypes
         /// <summary>
         /// The FieldGenerator of this class
         /// </summary>
-        protected internal FieldGenerator internalField { get; set; }
+        public FieldGenerator BackingField { get; set; }
 
         /// <summary>
         /// The PropertyBuilder of this class
@@ -85,7 +87,7 @@ namespace DynamicTypes
         public PropertyGenerator(string name, Type type) : base(type)
         {
             PropertyName = name;
-            internalField = new FieldGenerator("m_" + name, type);
+            BackingField = new FieldGenerator("m_" + name, type);
         }
 
         #endregion
@@ -95,7 +97,7 @@ namespace DynamicTypes
         /// <inheritdoc/>
         public override void DefineMember(TypeBuilder tb)
         {
-            internalField.DefineMember(tb);
+            BackingField.DefineMember(tb);
 
             internalProperty = tb.DefineProperty(PropertyName, PropertyAttributes.HasDefault, Type, null);
 
@@ -114,7 +116,7 @@ namespace DynamicTypes
                 var mbGet = tb.DefineMethod("get_" + PropertyName, getSetAttr, Type, Type.EmptyTypes);
                 var getIL = mbGet.GetILGenerator();
                 getIL.Emit(OpCodes.Ldarg_0);
-                getIL.Emit(OpCodes.Ldfld, internalField.internalField);
+                getIL.Emit(OpCodes.Ldfld, BackingField.internalField);
                 getIL.Emit(OpCodes.Ret);
                 internalProperty.SetGetMethod(mbGet);
 
@@ -129,7 +131,7 @@ namespace DynamicTypes
                 var setIL = mbSet.GetILGenerator();
                 setIL.Emit(OpCodes.Ldarg_0);
                 setIL.Emit(OpCodes.Ldarg_1);
-                setIL.Emit(OpCodes.Stfld, internalField.internalField);
+                setIL.Emit(OpCodes.Stfld, BackingField.internalField);
                 setIL.Emit(OpCodes.Ret);
                 internalProperty.SetSetMethod(mbSet);
 
@@ -145,7 +147,7 @@ namespace DynamicTypes
         public override void Compiled(TypeGenerator cg)
         {
             Property = cg.Type.GetProperty(PropertyName);
-            Field = cg.Type.GetField(internalField.FieldName);
+            Field = cg.Type.GetField(BackingField.FieldName);
             base.Compiled(cg);
         }
         #endregion

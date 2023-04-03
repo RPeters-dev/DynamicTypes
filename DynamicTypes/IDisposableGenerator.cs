@@ -17,7 +17,7 @@ namespace DynamicTypes
         /// <summary>
         /// Contains a list of Fields that are Going to be Disposed
         /// </summary>
-        public IEnumerable<FieldGenerator> ChildrenToDispose { get; }
+        public IEnumerable<FieldGenerator>? ChildrenToDispose { get; }
 
         /// <summary>
         /// the target for <see cref="Marshal.FinalReleaseComObject"/> will be called
@@ -27,7 +27,7 @@ namespace DynamicTypes
         /// <summary>
         /// The Method builder for the dispose method
         /// </summary>
-        public MethodBuilder MethodBuilder { get; private set; }
+        public MethodBuilder? MethodBuilder { get; private set; }
 
         #endregion Properties
 
@@ -37,7 +37,7 @@ namespace DynamicTypes
         /// initializes a new instance of <see cref="IDisposableGenerator"/>
         /// </summary>
         /// <param name="target">the target for that<see cref="IDisposable.Dispose"/> will be called</param>
-        public IDisposableGenerator(FieldBuilder target, IEnumerable<FieldGenerator> childrenToDispose = null) : base(typeof(IDisposable))
+        public IDisposableGenerator(FieldBuilder target, IEnumerable<FieldGenerator>? childrenToDispose = null) : base(typeof(IDisposable))
         {
             Target = target;
             ChildrenToDispose = childrenToDispose;

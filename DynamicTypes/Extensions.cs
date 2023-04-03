@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,8 +10,11 @@ namespace DynamicTypes
     public static class Extensions
     {
 
-        public static object CreateInstance(this TypeGenerator tg) => Activator.CreateInstance(tg.Type);
+        public static object? CreateInstance(this TypeGenerator tg) => Activator.CreateInstance(tg.Type);
+        public static T CreateInstance<T>(this TypeGenerator tg) => (T)Activator.CreateInstance(tg.Type);
 
+
+        
         public static void SetValue(this TypeGenerator tg, object instance, string name, object value)
         {
             tg.Members.OfType<PropertyGenerator>().FirstOrDefault(x => x.PropertyName == name)?.SetValue(instance, value);
@@ -25,10 +29,9 @@ namespace DynamicTypes
 
         public static object? GetValue(this FieldGenerator fg, object instance) => fg.Field.GetValue(instance);
 
+        public static T? GetValue<T>(this PropertyGenerator pg, object instance) => (T)pg.GetValue(instance);
 
-        public static T GetValue<T>(this PropertyGenerator pg, object instance) => (T)pg.GetValue(instance);
-
-        public static T GetValue<T>(this FieldGenerator fg, object instance) => (T)fg.GetValue(instance);
+        public static T? GetValue<T>(this FieldGenerator fg, object instance) => (T)fg.GetValue(instance);
 
 
     }

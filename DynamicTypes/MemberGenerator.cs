@@ -19,12 +19,12 @@ namespace DynamicTypes
         /// <summary>
         /// A type is always helpful for all Actions u Plan
         /// </summary>
-        public Type Type { get; set; }
+        public Type? Type { get; set; }
 
         /// <summary>
         /// Attributes that will be attached to the Member
         /// </summary>
-        public List<AttributeGenerator> Attributes { get; } = new List<AttributeGenerator>();
+        public List<AttributeGenerator> Attributes { get; set; } = new List<AttributeGenerator>();
 
         /// <summary>
         /// Some members have to be defined Early. Please use this to Check for Redundancies 
