@@ -2,6 +2,20 @@
 
 namespace DynamicTypes
 {
+    public class PaarmeterDecriptor<T> : PaarmeterDecriptor
+    {
+        public PaarmeterDecriptor() : base(typeof(T))
+        {
+            
+        }
+
+
+        public PaarmeterDecriptor(String name) : base(typeof(T), name)
+        {
+            
+        }
+    }
+
     public class PaarmeterDecriptor
     {
         /// <summary>
@@ -23,11 +37,23 @@ namespace DynamicTypes
         /// </summary>
         public object? DefaultValue { get; set; } = NoDefaultValue;
 
+        public PaarmeterDecriptor()
+        {
+            
+        }
+
+        public PaarmeterDecriptor(Type t, string name = null)
+        {
+            ParameterType = t;
+            Name = name;
+        }
 
         public static implicit operator PaarmeterDecriptor(Type t)
         {
             return new PaarmeterDecriptor() { ParameterType = t };
         }
+
+        public static PaarmeterDecriptor[] get(params Type[] source) => get(source as IEnumerable<Type>);
 
         public static PaarmeterDecriptor[] get(IEnumerable<Type> source)
         {
@@ -39,6 +65,9 @@ namespace DynamicTypes
             return source.Select(x => new PaarmeterDecriptor
             { ParameterType = x.ParameterType, Name = x.Name, DefaultValue = x.IsOptional ? x.DefaultValue : NoDefaultValue }).ToArray();
         }
+
+        public static PaarmeterDecriptor[] get(params ParameterInfo[] source) => get(source as IEnumerable<ParameterInfo>);
+
 
 
         /// <summary>

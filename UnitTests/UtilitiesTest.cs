@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,7 +42,44 @@ namespace DynamicTypes.UnitTests
             var item = jsonString.ToObject();
 
 
-            Assert.Equal(1, (item as dynamic).data[0].col1);
+            Assert.Equal(1, (item as dynamic)?.data[0].col1);
+        }
+
+        [Fact]
+        public void DataReaderTest()
+        {
+            string catalog = "";
+            string searchshema = "";
+
+            string connString = @"Data Source=localhost;Initial Catalog="+ catalog +";Integrated Security=True";
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                conn.Open();
+
+                var tables = new List<string>();
+                using (SqlCommand cmd = new SqlCommand("select TABLE_NAME from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = '"+searchshema+"'", conn))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                        while (reader.Read())
+                        {
+                            tables.Add(reader.GetValue(0).ToString());
+                        }
+                }
+
+                foreach (var item in tables)
+                {
+                    string query = "select TOP 10 * from "+searchshema+"." +item;
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        var reader = cmd.ExecuteReader();
+
+                        var itemsys = IDataReaderExtension.ToObject(reader).ToArray();
+
+                        reader.Close();
+                    }
+                }
+            }
         }
     }
 }

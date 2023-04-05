@@ -34,7 +34,7 @@ namespace DynamicTypes
         /// <summary>
         /// The Member that contains the Property used in case of Interfaces / Abstract etc.
         /// </summary>
-        public Type OverrideDefinition { get; set; }
+        public Type? OverrideDefinition { get; set; }
 
         #endregion
 

@@ -18,12 +18,12 @@ namespace DynamicTypes
         /// <summary>
         /// The Module used to Define Types
         /// </summary>
-        public ModuleBuilder Module { get; protected set; }
+        public ModuleBuilder? Module { get; protected set; }
 
         /// <summary>
         /// The Assembly builder
         /// </summary>
-        public AssemblyBuilder AssemblyBuilder { get; protected set; }
+        public AssemblyBuilder? AssemblyBuilder { get; protected set; }
 
         #endregion
 

@@ -113,7 +113,7 @@
 
         public void DetourMethodBuilderTest()
         {
-            PropertyGenerator pg = null;
+            PropertyGenerator pg;
             var g = new TypeGenerator
             {
                 Members =
@@ -124,7 +124,7 @@
             };
             var t = g.Compile();
             Assert.NotNull(t);
-            dynamic instance = g.CreateInstance();
+            dynamic? instance = g.CreateInstance();
             Assert.NotNull(instance);
 
             instance.testInstance = TestClass.instance;

@@ -11,7 +11,7 @@ namespace DynamicTypes
 {
     public class AttributeGenerator<T> : AttributeGenerator where T : Attribute
     {
-        public AttributeGenerator(params object[] parameter) : base(typeof(T), parameter) 
+        public AttributeGenerator(params object?[]? parameter) : base(typeof(T), parameter) 
         {
         }
     }
@@ -26,7 +26,7 @@ namespace DynamicTypes
         /// </summary>
         /// <param name="attributeType">Type of the attribute. !! if the attribute is not public u cant cosume it via <see cref="MemberInfo.GetCustomAttributes(bool)"/></param>
         /// <param name="parameter">parameter odf the attribute</param>
-        public AttributeGenerator(Type attributeType, params object[] parameter)
+        public AttributeGenerator(Type attributeType, params object?[]? parameter)
         {
             var ParameterTypes = parameter.Select(x => x?.GetType()).ToList();
             var constructors = attributeType.GetConstructors();

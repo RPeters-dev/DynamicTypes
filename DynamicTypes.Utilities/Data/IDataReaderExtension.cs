@@ -32,33 +32,33 @@ namespace DynamicTypes.Utilities.Data
         }
 
 
-        public interface ILoadIDataReaderRow
+        public interface ILoadIDataReader
         {
             public void Load(IDataReader source);
         }
 
         public static TypeGenerator ToTypeGenerator(this IDataReader reader)
         {
-            var dt = reader.GetSchemaTable();
-            string[] columnNames = dt?.Columns.Cast<DataColumn>()
+            var shemaTable = reader.GetSchemaTable();
+            string[] shemaColumnNames = shemaTable?.Columns.Cast<DataColumn>()
                                  .Select(x => x.ColumnName)
             .ToArray() ?? Array.Empty<string>();
 
             PropertyGenerator[] columns = new PropertyGenerator[reader.FieldCount];
-            Type fieldType = null;
+
             for (int i = 0; i<reader.FieldCount; i++)
             {
-                fieldType = reader.GetFieldType(i);
+                Type fieldType = reader.GetFieldType(i);
 
                 if (fieldType.IsValueType)
-                    fieldType = dt.Rows?[i]?["AllowDbNull"] as bool? == false
+                    fieldType = shemaTable.Rows?[i]?["AllowDbNull"] as bool? == false
                     ? fieldType : typeof(Nullable<>).MakeGenericType(reader.GetFieldType(i));
 
                 columns[i] = new PropertyGenerator(reader.GetName(i), reader.GetFieldType(i))
                 {
-                    Attributes = columnNames.Select(x =>
+                    Attributes = shemaColumnNames.Select(x =>
                     {
-                        return new AttributeGenerator<ColumnInfoAttribute>(x, dt?.Rows[i]?[x]?.ToString());
+                        return new AttributeGenerator<ColumnInfoAttribute>(x, shemaTable?.Rows?[i]?[x]?.ToString());
                     }).ToList<AttributeGenerator>()
                 };
             }
@@ -66,12 +66,12 @@ namespace DynamicTypes.Utilities.Data
             List<string> sourcetables = new List<string>();
             TypeGenerator tg = new TypeGenerator("DynamicTypes.IDataReaderObject") { 
                 Members = columns.ToList<MemberGenerator>(),
-                InterfaceImplementations = { typeof(ILoadIDataReaderRow) } 
+                InterfaceImplementations = { typeof(ILoadIDataReader) } 
             };
 
-            for (int i = 0; i < dt.Rows.Count; i++)
+            for (int i = 0; i < shemaTable?.Rows?.Count; i++)
             {
-                sourcetables.Add(dt.Rows[i]["BaseSchemaName"] + "." + dt.Rows[i]["BaseTableName"]);
+                sourcetables.Add(shemaTable.Rows[i]["BaseSchemaName"] + "." + shemaTable.Rows[i]["BaseTableName"]);
             }
             if (sourcetables.Distinct().Count() == 1 && sourcetables[0] != ".")
             {
@@ -79,28 +79,27 @@ namespace DynamicTypes.Utilities.Data
                 tg.EnshureUniqueName = false;
             }
 
-            var GetValue = typeof(IDataReaderExtension).GetMethod(nameof(IDataReader.GetValue), BindingFlags.Static | BindingFlags.Public);
-
-            tg.Members.Add(new IMethodGenerator<ILoadIDataReaderRow>(nameof(ILoadIDataReaderRow.Load))
+            var getValue = typeof(IDataReaderExtension).GetMethod(nameof(IDataReader.GetValue), BindingFlags.Static | BindingFlags.Public);
+            Action<ILGenerator> loadItem = (il) =>
             {
-                Generator  = (il) =>
-                    {
-                        for (int i = 0; columns.Length > i; i++)
-                        {
-                            il.Emit(OpCodes.Ldarg_0);
-                            il.Emit(OpCodes.Ldarg_1);
-                            il.Emit(OpCodes.Ldc_I4, i);
-                            il.Emit(OpCodes.Call, GetValue.MakeGenericMethod(columns[i].Type));
-                            il.Emit(OpCodes.Stfld, columns[i].BackingField.internalField);
-                        }
-                        il.Emit(OpCodes.Ret);
-                    }
-            });
+                for (int i = 0; columns.Length > i; i++)
+                {
+                    il.Emit(OpCodes.Ldarg_0);
+                    il.Emit(OpCodes.Ldarg_1);
+                    il.Emit(OpCodes.Ldc_I4, i);
+                    il.Emit(OpCodes.Call, getValue.MakeGenericMethod(columns[i].Type));
+                    il.Emit(OpCodes.Stfld, columns[i].BackingField.internalField);
+                }
+                il.Emit(OpCodes.Ret);
+            };
+            tg.Members.Add(new IMethodGenerator<ILoadIDataReader>(nameof(ILoadIDataReader.Load)) { Generator = loadItem });
+            tg.Members.Add(new ConstructorGenerator(new PaarmeterDecriptor<IDataReader>()) { Generator = loadItem });
+            tg.Members.Add(new ConstructorGenerator());
 
             return tg;
         }
 
-        public static T GetValue<T>(IDataReader reader, int column) => reader.IsDBNull(column) ? default : (T)reader.GetValue(column);
+        public static T GetValue<T>(IDataReader reader, int column) => (typeof(T).IsValueType && reader.IsDBNull(column)) ? default : (T)reader.GetValue(column);
 
         public static IEnumerable<object> ToObject(this IDataReader reader)
         {
@@ -108,7 +107,7 @@ namespace DynamicTypes.Utilities.Data
             tg.Compile();
             while (reader.Read())
             {
-                ILoadIDataReaderRow instance = tg.CreateInstance<ILoadIDataReaderRow>();
+                ILoadIDataReader instance = tg.CreateInstance<ILoadIDataReader>();
                 instance.Load(reader);
 
                 yield return instance;
