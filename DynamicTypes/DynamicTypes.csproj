@@ -17,7 +17,7 @@
     <PackageTags>reflection;runtimetypes;dynamictypes</PackageTags>
     <FileVersion></FileVersion>
     <AssemblyVersion></AssemblyVersion>
-    <Version>1.0.1</Version>
+    <Version>1.0.3</Version>
     <PackageIcon>DynamicTypesimg.png</PackageIcon>
     <RepositoryUrl>https://github.com/Discrepantia/DynamicTypes</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
