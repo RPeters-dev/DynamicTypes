@@ -9,7 +9,7 @@ namespace DynamicTypes
     /// <summary>
     /// Generates Properties that wrap and initialize the Propertie
     /// </summary>
-    public class DetourPeoprtyWrapper : DetourPeoprtyGenerator
+    public class DetourPropertyWrapper : DetourPropertyGenerator
     {
 
         #region Properties
@@ -28,13 +28,13 @@ namespace DynamicTypes
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of <see cref="DetourPeoprtyWrapper"/>
+        /// Initializes a new instance of <see cref="DetourPropertyWrapper"/>
         /// </summary>
         /// <param name="localObject">Generator that contains a local field that will be used to store the wrapped Property</param>
         /// <param name="sourceObjcet">The source object that contains the Property that will be wrapped </param>
         /// <param name="source">the Property that will be wrapped</param>
         /// <param name="wrapper">the method that returns the wrapped instance 'public static T Wrap&lt;T&gt;(T source)'</param>
-        public DetourPeoprtyWrapper(FieldGenerator localObject, FieldGenerator sourceObjcet, PropertyInfo source, MethodInfo wrapper) : base(sourceObjcet, source)
+        public DetourPropertyWrapper(FieldGenerator localObject, FieldGenerator sourceObjcet, PropertyInfo source, MethodInfo wrapper) : base(sourceObjcet, source)
         {
             LocalObject = localObject;
             Wrapper = wrapper;
@@ -45,7 +45,7 @@ namespace DynamicTypes
         #region Methods
 
         /// <inheritdoc/>
-        public override void DefineMember(TypeBuilder tb)
+        public override void DefineMember(TypeBuilder tb, TypeGenerator tg)
         {
             PropertyBuilder = tb.DefineProperty(Source.Name, PropertyAttributes.HasDefault | PropertyAttributes.SpecialName, Type, IndexParameter);
             var getSetAttr = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.SpecialName | MethodAttributes.Virtual | MethodAttributes.Final;

@@ -33,7 +33,7 @@ namespace DynamicTypes
 
         #region Methods
 
-        public override void DefineMember(TypeBuilder tb)
+        public override void DefineMember(TypeBuilder tb, TypeGenerator tg)
         {
             var attributes = MethodAttributes.Public;
 

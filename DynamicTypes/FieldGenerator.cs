@@ -24,10 +24,6 @@ namespace DynamicTypes
         /// </summary>
         public FieldBuilder internalField { get; set; }
         /// <summary>
-        /// Name of the Field
-        /// </summary>
-        public string FieldName { get; set; }
-        /// <summary>
         /// The Field that is Generated (Only available after Compiling) 
         /// </summary>
         public FieldInfo Field { get; private set; }
@@ -44,7 +40,7 @@ namespace DynamicTypes
         /// <param name="type">Type of the Field</param>
         public FieldGenerator(string name, Type type) : base(type)
         {
-            FieldName = name;
+            Name = name;
         }
 
         #endregion
@@ -54,14 +50,14 @@ namespace DynamicTypes
         /// <inheritdoc/>
         public override void Compiled(TypeGenerator cg)
         {
-            Field = cg.Type.GetField(FieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+            Field = cg.Type.GetField(Name, BindingFlags.NonPublic | BindingFlags.Instance);
 
             base.Compiled(cg);
         }
         /// <inheritdoc/>
-        public override void DefineMember(TypeBuilder tb)
+        public override void DefineMember(TypeBuilder tb, TypeGenerator tg)
         {
-            internalField = tb.DefineField(FieldName, Type, FieldAttributes);
+            internalField = tb.DefineField(Name, Type, FieldAttributes);
 
             foreach (var item in Attributes)
             {

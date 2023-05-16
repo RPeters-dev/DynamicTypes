@@ -39,7 +39,7 @@ namespace DynamicTypes
         /// <summary>
         /// Superclass of the new type
         /// </summary>
-        public Type BaseType { get; }
+        public Type? BaseType { get; }
         /// <summary>
         /// The Type, that will be generated from this Generator
         /// </summary>
@@ -66,7 +66,7 @@ namespace DynamicTypes
 
         #region Constructors
 
-        public TypeGenerator(string typeName = "<>DynamicType", Type baseType = null)
+        public TypeGenerator(string typeName = "<>DynamicType", Type? baseType = null)
         {
             TypeName = typeName;
             BaseType = baseType;
@@ -106,10 +106,10 @@ namespace DynamicTypes
             {
                 tb.AddInterfaceImplementation(item);
             }
-
-            foreach (var item in Members.Where(x => !x.Defined))
+            var toDefine = Members.Where(x => !x.Defined).ToArray();
+            foreach (var item in toDefine)
             {
-                item.DefineMember(tb);
+                item.DefineMember(tb, this);
             }
 
             Type = tb.CreateType();

@@ -2,22 +2,88 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Reflection.Metadata;
+using System.Xml.Linq;
 
 namespace DynamicTypes
 {
-
-    public class iPropertyGenerator<T> : PropertyGenerator
+    /// <summary>
+    /// Generate an oberride for a virtual/abstract Property & calls base.
+    /// </summary>
+    public class virtualPropertyGenerator : PropertyGeneratorBase
     {
-        public iPropertyGenerator(string name) : base(name, null)
+        public PropertyInfo TargetProperty { get; }
+
+        public virtualPropertyGenerator(Type T, string name) : base(name, null)
         {
-            OverrideDefinition = typeof(T);
-            var p = typeof(T).GetProperty(name);
+            OverrideDefinition = T;
+            TargetProperty = T.GetProperty(name);
 
-            Type = p.PropertyType;
-            BackingField = new FieldGenerator("m_" + name, Type);
+            Type = TargetProperty.PropertyType;
 
-            Get = p.GetMethod != null;
-            Set = p.GetMethod != null;
+            Get = TargetProperty.GetMethod != null;
+            Set = TargetProperty.SetMethod != null;
+        }
+
+        public override Action<ILGenerator> GenerateGetMethod
+        {
+            get => (ILGenerator il) =>
+            {
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Call, TargetProperty.GetMethod);
+                il.Emit(OpCodes.Ret);
+            }; set => base.GenerateGetMethod=value;
+        }
+
+        public override Action<ILGenerator> GenerateSetMethod
+        {
+            get => (ILGenerator il) =>
+            {
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Ldarg_1);
+                il.Emit(OpCodes.Call, TargetProperty.SetMethod);
+                il.Emit(OpCodes.Ret);
+            }; set => base.GenerateSetMethod=value;
+        }
+    }
+
+    /// <summary>
+    /// Generate an oberride for a Interface Property
+    /// </summary>
+    public class iPropertyGenerator : PropertyGenerator
+    {
+        /// <summary>
+        /// i dont like this approach, but it works, for now
+        /// </summary>
+        public bool UseSingleBackingField { get; set; }
+
+        public PropertyInfo TargetProperty { get; }
+
+        public iPropertyGenerator(Type T, string name) : base(name, null)
+        {
+            OverrideDefinition = T;
+            TargetProperty = T.GetProperty(name);
+
+            Type = TargetProperty.PropertyType;
+
+            Get = TargetProperty.GetMethod != null;
+            Set = TargetProperty.SetMethod != null;
+
+            UseSingleBackingField = true;
+        }
+
+        public override void DefineMember(TypeBuilder tb, TypeGenerator tg)
+        {
+            BackingFieldName = UseSingleBackingField ? null : TargetProperty.DeclaringType.Name + "_" + TargetProperty.Name;
+
+            base.DefineMember(tb, tg);
+        }
+    }
+    public class iPropertyGenerator<T> : iPropertyGenerator
+    {
+        public iPropertyGenerator(string name) : base(typeof(T), name)
+        {
+
         }
     }
     public class PropertyGenerator<T> : PropertyGenerator
@@ -30,25 +96,20 @@ namespace DynamicTypes
     /// <summary>
     /// A Simple generator for Flat Properties eg. get; set;
     /// </summary>
-    [DebuggerDisplay("PropertyGenerator {PropertyName} {Type.FullName}")]
-    public class PropertyGenerator : MemberGenerator
+    [DebuggerDisplay("PropertyGenerator {Name} {Type.FullName}")]
+    public class PropertyGenerator : PropertyGeneratorBase
     {
 
         #region Properties
 
         /// <summary>
-        /// Name of the Property
+        /// Defines a Name for the BackingField
         /// </summary>
-        public string PropertyName { get; set; }
+        public string? BackingFieldName { get; set; }
         /// <summary>
         /// The FieldGenerator of this class
         /// </summary>
         public FieldGenerator BackingField { get; set; }
-
-        /// <summary>
-        /// The PropertyBuilder of this class
-        /// </summary>
-        protected internal PropertyBuilder internalProperty { get; set; }
 
         /// <summary>
         /// The Property that is Generated (Only available after Compiling) 
@@ -59,15 +120,6 @@ namespace DynamicTypes
         /// The Field that is Generated (Only available after Compiling) 
         /// </summary>
         public FieldInfo Field { get; set; }
-
-        /// <summary>
-        /// Defines if a getProperty will be defined
-        /// </summary>
-        public bool Get { get; set; } = true;
-        /// <summary>
-        /// Defines if a setProperty will be defined
-        /// </summary>
-        public bool Set { get; set; } = true;
 
 
         #endregion
@@ -84,10 +136,119 @@ namespace DynamicTypes
         /// </summary>
         /// <param name="name">Name of the Property</param>
         /// <param name="type">Type of the Property</param>
-        public PropertyGenerator(string name, Type type) : base(type)
+        public PropertyGenerator(string name, Type type) : base(name, type)
         {
-            PropertyName = name;
-            BackingField = new FieldGenerator("m_" + name, type);
+        }
+
+        #endregion
+
+        #region Methods
+
+        public string GetFieldName() => BackingFieldName ?? "m_" + Name;
+
+        /// <inheritdoc/>
+        public override void DefineMember(TypeBuilder tb, TypeGenerator tg)
+        {
+            if (BackingField != null)
+                return;
+
+            if (BackingFieldName != null
+                && tg.Members.OfType<FieldGenerator>().FirstOrDefault(x => x.Name == BackingFieldName) is FieldGenerator fg)
+            {
+                BackingField = fg;
+            }
+
+            if (BackingField == null)
+            {
+
+                BackingField = new FieldGenerator(GetFieldName(), Type ?? typeof(object));
+                BackingField.DefineMember(tb, tg);
+                tg.Members.Add(BackingField);
+            }
+
+            base.DefineMember(tb, tg);
+        }
+
+        public override Action<ILGenerator> GenerateGetMethod
+        {
+            get => (ILGenerator il) =>
+        {
+            if (BackingField != null)
+            {
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Ldfld, BackingField.internalField);
+                il.Emit(OpCodes.Ret);
+            }
+        }; set => base.GenerateGetMethod=value; }
+
+        public override Action<ILGenerator> GenerateSetMethod
+        {
+            get => (ILGenerator il) =>
+            {
+            if (BackingField != null)
+            {
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Ldarg_1);
+                il.Emit(OpCodes.Stfld, BackingField.internalField);
+                il.Emit(OpCodes.Ret);
+            }
+        }; set => base.GenerateSetMethod=value; }
+
+        public override void Compiled(TypeGenerator cg)
+        {
+            base.Compiled(cg);
+            Field = cg.Type.GetField(BackingField.Name);
+        }
+        #endregion
+
+    }
+
+
+    public class PropertyGeneratorBase : MemberGenerator
+    {
+        #region Properties
+
+        /// <summary>
+        /// The PropertyBuilder of this class
+        /// </summary>
+        public PropertyBuilder internalProperty { get; set; }
+
+        /// <summary>
+        /// The Property that is Generated (Only available after Compiling) 
+        /// </summary>
+        public PropertyInfo Property { get; set; }
+
+
+
+        /// <summary>
+        /// Defines if a getProperty will be defined
+        /// </summary>
+        public bool Get { get; set; } = true;
+        /// <summary>
+        /// Defines if a setProperty will be defined
+        /// </summary>
+        public bool Set { get; set; } = true;
+        public MethodBuilder GetMethod { get; private set; }
+        public MethodBuilder SetMethod { get; private set; }
+
+
+        #endregion
+
+        #region Constructors
+
+        public PropertyGeneratorBase()
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="PropertyGenerator"/>
+        /// </summary>
+        /// <param name="name">Name of the Property</param>
+        /// <param name="type">Type of the Property</param>
+        public PropertyGeneratorBase(string name, Type type) : base(type)
+        {
+            Name = name;
         }
 
         #endregion
@@ -95,11 +256,9 @@ namespace DynamicTypes
         #region Methods
 
         /// <inheritdoc/>
-        public override void DefineMember(TypeBuilder tb)
+        public override void DefineMember(TypeBuilder tb, TypeGenerator tg)
         {
-            BackingField.DefineMember(tb);
-
-            internalProperty = tb.DefineProperty(PropertyName, PropertyAttributes.HasDefault, Type, null);
+            internalProperty = tb.DefineProperty(Name, PropertyAttributes.HasDefault, Type, null);
 
             foreach (var item in Attributes)
             {
@@ -107,50 +266,51 @@ namespace DynamicTypes
             }
 
             var getSetAttr = MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig;
-            if(OverrideDefinition != null)
+            if (OverrideDefinition != null)
             {
                 getSetAttr = getSetAttr | MethodAttributes.Virtual;
             }
-            if(Get)
+            if (Get)
             {
-                var mbGet = tb.DefineMethod("get_" + PropertyName, getSetAttr, Type, Type.EmptyTypes);
-                var getIL = mbGet.GetILGenerator();
-                getIL.Emit(OpCodes.Ldarg_0);
-                getIL.Emit(OpCodes.Ldfld, BackingField.internalField);
-                getIL.Emit(OpCodes.Ret);
-                internalProperty.SetGetMethod(mbGet);
+                GetMethod = tb.DefineMethod("get_" + Name, getSetAttr, Type, Type.EmptyTypes);
+                var getIL = GetMethod.GetILGenerator();
+                GenerateGetMethod(getIL);
 
+                internalProperty.SetGetMethod(GetMethod);
                 if (OverrideDefinition != null)
                 {
-                    tb.DefineMethodOverride(mbGet, OverrideDefinition.GetMethod("get_" + PropertyName));
+                    foreach (var item in OverrideDefinitions)
+                    {
+                        tb.DefineMethodOverride(GetMethod, item.GetMethod("get_" + Name));
+                    }
                 }
             }
-            if(Set)
+            if (Set)
             {
-                var mbSet = tb.DefineMethod("set_" + PropertyName, getSetAttr, null, new Type[] { Type });
-                var setIL = mbSet.GetILGenerator();
-                setIL.Emit(OpCodes.Ldarg_0);
-                setIL.Emit(OpCodes.Ldarg_1);
-                setIL.Emit(OpCodes.Stfld, BackingField.internalField);
-                setIL.Emit(OpCodes.Ret);
-                internalProperty.SetSetMethod(mbSet);
+                SetMethod = tb.DefineMethod("set_" + Name, getSetAttr, null, new Type[] { Type });
+                var setIL = SetMethod.GetILGenerator();
+                GenerateSetMethod(setIL);
 
+                internalProperty.SetSetMethod(SetMethod);
                 if (OverrideDefinition != null)
                 {
-                    tb.DefineMethodOverride(mbSet, OverrideDefinition.GetMethod("set_" + PropertyName));
+                    foreach (var item in OverrideDefinitions)
+                    {
+                        tb.DefineMethodOverride(SetMethod, item.GetMethod("set_" + Name));
+                    }
                 }
             }
 
         }
 
+        public virtual Action<ILGenerator> GenerateGetMethod { get; set; }
+        public virtual Action<ILGenerator> GenerateSetMethod { get; set; }
 
         public override void Compiled(TypeGenerator cg)
         {
-            Property = cg.Type.GetProperty(PropertyName);
-            Field = cg.Type.GetField(BackingField.FieldName);
+            Property = cg.Type.GetProperty(Name);
             base.Compiled(cg);
         }
         #endregion
-
     }
 }

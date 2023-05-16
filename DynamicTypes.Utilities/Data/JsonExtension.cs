@@ -9,8 +9,6 @@ namespace DynamicTypes.Utilities.Data
 {
     public static class JsonExtension
     {
-
-
         public static TypeGenerator ToTypeGenerator(this JsonElement rootElement, string name = "DynamicTypes.JsonObject")
         {
             TypeGenerator typeGenerator = new TypeGenerator(name);

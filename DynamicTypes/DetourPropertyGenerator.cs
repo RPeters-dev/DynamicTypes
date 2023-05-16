@@ -8,7 +8,7 @@ namespace DynamicTypes
     /// <summary>
     /// A Simple Generator for Detouring properties 
     /// </summary>
-    public class DetourPeoprtyGenerator : MemberGenerator
+    public class DetourPropertyGenerator : MemberGenerator
     {
 
         #region Properties
@@ -42,11 +42,11 @@ namespace DynamicTypes
         #region Constructors
 
         /// <summary>
-        /// Initializes a new Instance of <see cref="DetourPeoprtyGenerator"/>
+        /// Initializes a new Instance of <see cref="DetourPropertyGenerator"/>
         /// </summary>
         /// <param name="sourceOField">Field that contains the target of the Detour </param>
         /// <param name="source">Property that will be Detoured</param>
-        public DetourPeoprtyGenerator(FieldGenerator sourceOField, PropertyInfo source) : base(source.PropertyType)
+        public DetourPropertyGenerator(FieldGenerator sourceOField, PropertyInfo source) : base(source.PropertyType)
         {
             SourceObjcet = sourceOField;
             Source = source;
@@ -65,7 +65,7 @@ namespace DynamicTypes
             base.Compiled(cg);
         }
         /// <inheritdoc/>
-        public override void DefineMember(TypeBuilder tb)
+        public override void DefineMember(TypeBuilder tb, TypeGenerator tg)
         {
             PropertyBuilder = tb.DefineProperty(Source.Name, PropertyAttributes.HasDefault | PropertyAttributes.SpecialName, Source.PropertyType, IndexParameter);
             var getSetAttr = MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig;

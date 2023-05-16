@@ -56,7 +56,7 @@ namespace DynamicTypes
         }
 
         /// <inheritdoc/>
-        public override void DefineMember(TypeBuilder tb)
+        public override void DefineMember(TypeBuilder tb, TypeGenerator tg)
         {
             var attributes = MethodAttributes.Public;
             if (IsStatic && ParmeterDecriptors.Any())

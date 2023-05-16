@@ -32,7 +32,7 @@ namespace DynamicTypes
 
             #region Methods
 
-            public override void DefineMember(TypeBuilder tb)
+            public override void DefineMember(TypeBuilder tb, TypeGenerator tg)
             {
                 MethodBuilder = tb.DefineMethod(nameof(IDisposable.Dispose), MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final, null, Type.EmptyTypes);
                 var IL = MethodBuilder.GetILGenerator();

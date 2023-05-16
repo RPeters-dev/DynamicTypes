@@ -22,6 +22,11 @@ namespace DynamicTypes
         public Type? Type { get; set; }
 
         /// <summary>
+        /// Name of the Member
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// Attributes that will be attached to the Member
         /// </summary>
         public List<AttributeGenerator> Attributes { get; set; } = new List<AttributeGenerator>();
@@ -34,7 +39,18 @@ namespace DynamicTypes
         /// <summary>
         /// The Member that contains the Property used in case of Interfaces / Abstract etc.
         /// </summary>
-        public Type? OverrideDefinition { get; set; }
+        public Type? OverrideDefinition
+        {
+            get { return OverrideDefinitions.FirstOrDefault(); }
+            set
+            {
+                if (OverrideDefinitions.Count == 0)
+                    OverrideDefinitions.Add(value);
+                else
+                    OverrideDefinitions[0] = value;
+            }
+        }
+        public List<Type?> OverrideDefinitions { get; set; } = new List<Type?>();
 
         #endregion
 
@@ -57,7 +73,7 @@ namespace DynamicTypes
         /// Defines a Member (Creates Field, Properties and Methods), please note, Definition of a member can be done anytime if necessary.
         /// </summary>
         /// <param name="tb"></param>
-        public abstract void DefineMember(TypeBuilder tb);
+        public abstract void DefineMember(TypeBuilder tb, TypeGenerator tg);
 
         /// <summary>
         /// Will be when the Final Type is compiled

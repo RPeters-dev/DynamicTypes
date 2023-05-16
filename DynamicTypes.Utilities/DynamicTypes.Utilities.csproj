@@ -9,7 +9,20 @@
     <Description>Utilities for the DynamicTypes Libary</Description>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Discrepantia/DynamicTypes</RepositoryUrl>
+    <Version>1.0.3</Version>
+    <Authors>Robin Peters</Authors>
+    <Copyright>Robin Peters</Copyright>
+    <PackageProjectUrl>https://github.com/Discrepantia/DynamicTypes</PackageProjectUrl>
+    <PackageIcon>DynamicTypesimg.png</PackageIcon>
+    <PackageTags>reflection;runtimetypes;dynamictypes</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\DynamicTypesimg.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DynamicTypes\DynamicTypes.csproj" />

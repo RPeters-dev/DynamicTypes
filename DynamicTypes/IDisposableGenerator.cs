@@ -48,10 +48,10 @@ namespace DynamicTypes
         #region Methods
 
         /// <inheritdoc/>
-        public override void DefineMember(TypeBuilder tb)
+        public override void DefineMember(TypeBuilder tb, TypeGenerator tg)
         {
             var fgDisposed = new FieldGenerator("_disposed", typeof(bool));
-            fgDisposed.DefineMember(tb);
+            fgDisposed.DefineMember(tb, tg);
 
             MethodBuilder = tb.DefineMethod(nameof(IDisposable.Dispose), MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final, null, Type.EmptyTypes);
             var IL = MethodBuilder.GetILGenerator();

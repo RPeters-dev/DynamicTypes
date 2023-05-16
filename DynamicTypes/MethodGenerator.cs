@@ -3,20 +3,34 @@ using System.Reflection.Emit;
 
 namespace DynamicTypes
 {
-
-    public class IMethodGenerator<T> : MethodGenerator
+    public class IMethodGenerator : MethodGenerator
     {
-        public IMethodGenerator(string name) : this(typeof(T).GetMethod(name))
+        public IMethodGenerator(Type T, string name) : this(T, T.GetMethod(name))
         {
 
         }
 
-        public IMethodGenerator(MethodInfo target)
+        public IMethodGenerator(MethodInfo target) : this(target.DeclaringType, target)
+        {
+        }
+
+        public IMethodGenerator(Type T, MethodInfo target)
         {
             Name = target.Name;
             Type = target.ReturnType;
             ParmeterDecriptors = PaarmeterDecriptor.get(target.GetParameters());
-            OverrideDefinition = typeof(T);
+            OverrideDefinition = T;
+        }
+    }
+
+    public class IMethodGenerator<T> : IMethodGenerator
+    {
+        public IMethodGenerator( string name) : base(typeof(T), name)
+        {
+        }
+
+        public IMethodGenerator(MethodInfo target) : base(typeof(T), target)
+        {
         }
     }
 
@@ -61,7 +75,7 @@ namespace DynamicTypes
         }
 
         /// <inheritdoc/>
-        public override void DefineMember(TypeBuilder tb)
+        public override void DefineMember(TypeBuilder tb, TypeGenerator tg)
         {
             var attributes = MethodAttributes.Public;
 

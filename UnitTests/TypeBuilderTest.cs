@@ -64,7 +64,7 @@
         }
 
 
-       [Fact]
+        [Fact]
 
         public void PropertyGeneratorTest()
         {
@@ -73,7 +73,7 @@
                 Members =
                 {
                   new PropertyGenerator<TestClass>("testInstance"),
-            
+
                 }
             };
             var t = g.Compile();
@@ -85,6 +85,61 @@
 
             Assert.Equal(TestClass.instance, instance.testInstance);
         }
+
+        [Fact]
+
+        public void InterfacePropertyGeneratorTest()
+        {
+            var g = new TypeGenerator
+            {
+                Members =
+                {
+                  new iPropertyGenerator<TestInterface>(nameof(TestInterface.P1)) { UseSingleBackingField = false },
+                  new iPropertyGenerator<TestInterface2>(nameof(TestInterface2.P1)) { UseSingleBackingField = false },
+                }
+            };
+            g.InterfaceImplementations.Add(typeof(TestInterface));
+            g.InterfaceImplementations.Add(typeof(TestInterface2));
+
+            var t = g.Compile();
+            Assert.NotNull(t);
+            TestInterface instance = (TestInterface)g.CreateInstance();
+            TestInterface2 instance2 = (TestInterface2)instance;
+            Assert.NotNull(instance);
+
+            instance.P1 = 66;
+            instance2.P1 = 88;
+
+            Assert.NotEqual(instance.P1, instance2.P1);
+        }
+
+        [Fact]
+
+        public void InterfacePropertyGeneratorTest2()
+        {
+            var g = new TypeGenerator
+            {
+                Members =
+                {
+                  new iPropertyGenerator<TestInterface>(nameof(TestInterface.P1)) ,
+                  new iPropertyGenerator<TestInterface2>(nameof(TestInterface2.P1)) ,
+                }
+            };
+            g.InterfaceImplementations.Add(typeof(TestInterface));
+            g.InterfaceImplementations.Add(typeof(TestInterface2));
+
+            var t = g.Compile();
+            Assert.NotNull(t);
+            TestInterface instance = (TestInterface)g.CreateInstance();
+            TestInterface2 instance2 = (TestInterface2)instance;
+            Assert.NotNull(instance);
+
+            instance.P1 = 66;
+            instance2.P1 = 88;
+
+            Assert.Equal(instance.P1, instance2.P1);
+        }
+
 
         [Fact]
         public void FieldGeneratorTest()
@@ -143,6 +198,16 @@
             {
                 return 8;
             }
+        }
+
+        public interface TestInterface
+        {
+            int P1 { get; set; }
+        }
+
+        public interface TestInterface2
+        {
+            int P1 { get; set; }
         }
     }
 }

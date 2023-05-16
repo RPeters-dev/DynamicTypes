@@ -55,7 +55,7 @@ namespace DynamicTypes
         /// <summary>
         /// List of all Properties
         /// </summary>
-        List<DetourPeoprtyGenerator> Properties { get; set; } = new List<DetourPeoprtyGenerator>();
+        List<DetourPropertyGenerator> Properties { get; set; } = new List<DetourPropertyGenerator>();
 
         #endregion
 
@@ -117,20 +117,20 @@ namespace DynamicTypes
         }
 
         /// <inheritdoc />
-        public override void DefineMember(TypeBuilder tb)
+        public override void DefineMember(TypeBuilder tb, TypeGenerator tg)
         {
             //Add SourceField
             Sourcefield = new FieldGenerator("source_" + Type.Name, Type);
-            Sourcefield.DefineMember(tb);
+            Sourcefield.DefineMember(tb, tg);
 
 
-            DetourPeoprtyGenerator dpg = null;
+            DetourPropertyGenerator dpg = null;
             foreach (var item in IterateInterfaceProperties(Type))
             {
                 if (item.PropertyType.IsInterface && IterateInterfaces(item.PropertyType).Any(x => x.GetCustomAttributes(typeof(TypeLibTypeAttribute)).Any()))
                 {
                     var InnerSourcefield = new FieldGenerator("source_" + item.Name, item.PropertyType);
-                    InnerSourcefield.DefineMember(tb);
+                    InnerSourcefield.DefineMember(tb, tg);
                     //Wrap it 
                     dpg = new DetourPeoprtyWrapper_ComObject(InnerSourcefield, Sourcefield, item)
                     {
@@ -140,13 +140,13 @@ namespace DynamicTypes
                 else
                 {
                     //use a normal Detour Property for normal Types
-                    dpg = new DetourPeoprtyGenerator(Sourcefield, item)
+                    dpg = new DetourPropertyGenerator(Sourcefield, item)
                     {
                         OverrideDefinition = item.DeclaringType
                     };
                 }
                 Properties.Add(dpg);
-                dpg.DefineMember(tb);
+                dpg.DefineMember(tb, tg);
             }
 
             DetourMethodGenerator mpg = null;
@@ -173,16 +173,16 @@ namespace DynamicTypes
                 }
                 Methods.Add(mpg);
 
-                mpg.DefineMember(tb);
+                mpg.DefineMember(tb, tg);
             }
 
             //Add Release
             Dispose = new IDisposable_ComObject(Properties.OfType<DetourPeoprtyWrapper_ComObject>().Select(x => x.LocalObject), Sourcefield.internalField);
-            Dispose.DefineMember(tb);
+            Dispose.DefineMember(tb, tg);
 
             //Add Finalize
             Dispose_Finalize = new FinalizeDispose(Dispose);
-            Dispose_Finalize.DefineMember(tb);
+            Dispose_Finalize.DefineMember(tb, tg);
 
             Defined = true;
         }
