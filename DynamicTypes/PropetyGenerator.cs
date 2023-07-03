@@ -109,17 +109,12 @@ namespace DynamicTypes
         /// <summary>
         /// The FieldGenerator of this class
         /// </summary>
-        public FieldGenerator BackingField { get; set; }
-
-        /// <summary>
-        /// The Property that is Generated (Only available after Compiling) 
-        /// </summary>
-        public PropertyInfo Property { get; set; }
+        public FieldGenerator? BackingField { get; set; }
 
         /// <summary>
         /// The Field that is Generated (Only available after Compiling) 
         /// </summary>
-        public FieldInfo Field { get; set; }
+        public FieldInfo? Field { get; set; }
 
 
         #endregion
@@ -136,7 +131,7 @@ namespace DynamicTypes
         /// </summary>
         /// <param name="name">Name of the Property</param>
         /// <param name="type">Type of the Property</param>
-        public PropertyGenerator(string name, Type type) : base(name, type)
+        public PropertyGenerator(string name, Type? type) : base(name, type)
         {
         }
 
@@ -246,7 +241,7 @@ namespace DynamicTypes
         /// </summary>
         /// <param name="name">Name of the Property</param>
         /// <param name="type">Type of the Property</param>
-        public PropertyGeneratorBase(string name, Type type) : base(type)
+        public PropertyGeneratorBase(string name, Type? type) : base(type)
         {
             Name = name;
         }

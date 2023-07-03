@@ -82,19 +82,18 @@ namespace DynamicTypes
         /// <typeparam name="T">The Type of the COM Interface </typeparam>
         /// <param name="source">the Source COM object</param>
         /// <returns>a Object thats wraps the <paramref name="source"/> <returns>
-        public static T Wrap<T>(T source)
+        public static T? Wrap<T>(T? source)
         {
-            COMWrapper wrapper = null;
-            if (!Cache.TryGetValue(typeof(T), out wrapper))
+            if (!Cache.TryGetValue(typeof(T), out var wrapper))
             {
-                wrapper = new COMWrapper(typeof(T), $"Managed_{typeof(T).Name}");
+                wrapper = new (typeof(T), $"Managed_{typeof(T).Name}");
                 Cache.Add(typeof(T), wrapper);
                 wrapper.Compile();
             }
 
             var instance = Activator.CreateInstance(wrapper.TypeGenerator.Type);
             wrapper.InitializeInstance(instance, source);
-            return (T)instance;
+            return (T?)instance;
         }
 
         /// <inheritdoc/>
@@ -122,7 +121,7 @@ namespace DynamicTypes
             Sourcefield.DefineMember(tb, tg);
 
 
-            DetourPropertyGenerator dpg = null;
+            DetourPropertyGenerator? dpg = null;
             foreach (var item in IterateInterfaceProperties(Type))
             {
                 if (item.PropertyType.IsInterface && IterateInterfaces(item.PropertyType).Any(x => x.GetCustomAttributes(typeof(TypeLibTypeAttribute)).Any()))
@@ -147,7 +146,7 @@ namespace DynamicTypes
                 dpg.DefineMember(tb, tg);
             }
 
-            DetourMethodGenerator mpg = null;
+            DetourMethodGenerator? mpg = null;
             foreach (var item in IterateInterfaceMethods(Type))
             {
                 //Do not implement getter and setter
@@ -190,7 +189,7 @@ namespace DynamicTypes
         /// </summary>
         /// <param name="instance"></param>
         /// <param name="DetourObject"></param>
-        internal void InitializeInstance(object instance, object DetourObject)
+        internal void InitializeInstance(object? instance, object? DetourObject)
         {
             Sourcefield.Field.SetValue(instance, DetourObject);
         }

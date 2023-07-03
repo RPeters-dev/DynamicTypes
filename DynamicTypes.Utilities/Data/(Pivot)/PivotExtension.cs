@@ -75,15 +75,13 @@ namespace DynamicTypes.Utilities.Data
 
             var resType = tg.Compile();
 
-
-            var result = new List<IPivotChange>();
-            IPivotChange row;
+            
             foreach (var item in keyValueList.GroupBy(x => x.KeyY))
             {
-                result.Add(row = tg.CreateInstance<PivotRowBase>());
+                IPivotChange row = tg.CreateInstance<PivotRowBase>();
                 row.ValueMember = valueMember;
                 row.GeneratorSource = tg;
-                row.SourceItems = item.ToDictionary(x => x.KeyX, x => (object)x.Item);
+                row.SourceItems = item.ToDictionary(x => x.KeyX, x => (object?)x.Item);
                 yield return row;
             }
         }

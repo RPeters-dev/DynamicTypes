@@ -16,11 +16,11 @@ namespace DynamicTypes
         /// <summary>
         /// The builder of the Detouring Method
         /// </summary>
-        protected ConstructorBuilder ConstructorBuilder { get; set; }
+        protected ConstructorBuilder? ConstructorBuilder { get; set; }
         /// <summary>
         /// The Constructor that is Generated (Only available after Compiling) 
         /// </summary>
-        public ConstructorInfo Method { get; private set; }
+        public ConstructorInfo? Method { get; private set; }
 
         /// <summary>
         /// Method Parameters
