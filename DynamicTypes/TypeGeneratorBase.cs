@@ -95,6 +95,8 @@ namespace DynamicTypes
         {
             AssemblyBuilder.Initialize();
 
+            QualityOfLive();
+
             var tb = AssemblyBuilder.Module.DefineType(GetTypeName(), TypeAttributes.Public, BaseType);
 
             foreach (var item in Attributes)
@@ -102,16 +104,16 @@ namespace DynamicTypes
                 tb.SetCustomAttribute(item.AttributeBuilder);
             }
 
-            foreach (var item in InterfaceImplementations)
-            {
-                tb.AddInterfaceImplementation(item);
-            }
             var toDefine = Members.Where(x => !x.Defined).ToArray();
             foreach (var item in toDefine)
             {
                 item.DefineMember(tb, this);
             }
 
+            foreach (var item in InterfaceImplementations)
+            {
+                tb.AddInterfaceImplementation(item);
+            }
             Type = tb.CreateType();
 
             foreach (var item in Members)
@@ -120,6 +122,12 @@ namespace DynamicTypes
             }
 
             return Type;
+        }
+
+        private void QualityOfLive()
+        {
+            InterfaceImplementations.AddRange(
+                Members.SelectMany(x => x.OverrideDefinitions).Where(x => x != null && x.IsInterface).Distinct().Except(InterfaceImplementations).ToArray());
         }
 
         #endregion

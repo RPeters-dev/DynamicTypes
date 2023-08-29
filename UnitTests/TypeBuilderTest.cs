@@ -1,4 +1,7 @@
-﻿namespace DynamicTypes.UnitTests
+﻿using System.Diagnostics;
+using DynamicTypes.Utilities.Data;
+
+namespace DynamicTypes.UnitTests
 {
     public class TypeBuilderTest
     {
@@ -72,7 +75,7 @@
             {
                 Members =
                 {
-                  new PropertyGenerator<TestClass>("testInstance"),
+                  new PropertyGenerator1<TestClass>("testInstance"),
 
                 }
             };
@@ -84,6 +87,47 @@
             instance.testInstance = TestClass.instance;
 
             Assert.Equal(TestClass.instance, instance.testInstance);
+        }
+
+
+
+        [Fact]
+
+        public void IndexPropertyTest()
+        {
+            var ItemName = "Item";
+            var g = new TypeGenerator
+            {
+                Members = {
+                  new iPropertyGenerator<IPivotRowInternals>(ItemName)
+                      {
+                            UseSingleBackingField = false,
+                            GenerateGetMethod =  (il) =>
+                            {
+                                il.Emit(OpCodes.Ldarg_1);
+                                il.Emit(OpCodes.Ret);
+                            },
+                            GenerateSetMethod = (il) =>
+                            {
+                                il.Emit(OpCodes.Ret);
+                            }
+                      }
+
+                },
+                Attributes = {
+                    new AttributeGenerator<DefaultMemberAttribute>(ItemName)
+                }
+            };
+            var t = g.Compile();
+            Assert.NotNull(t);
+
+            dynamic instance = g.CreateInstance();
+            Assert.NotNull(instance);
+
+
+            var sttstst = (instance as IPivotRowInternals)[ItemName];
+
+            Assert.Equal(sttstst, ItemName);
         }
 
         [Fact]
@@ -173,7 +217,7 @@
             {
                 Members =
                 {
-                   (pg =  new PropertyGenerator<TestClass>("testInstance")),
+                   (pg =  new PropertyGenerator1<TestClass>("testInstance")),
                     new DetourMethodGenerator(pg.BackingField, typeof(TestClass).GetMethod(nameof(TestClass.testMethod)))
                 }
             };

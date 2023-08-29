@@ -90,29 +90,17 @@ namespace DynamicTypes.UnitTests
         {
 
             var sources = new[] {
-            new kvc{
-                Key = "c1",
-                Row = "1",
-                Value = "1/1"
-            }, new kvc{
-                Key = "c2",
-                Row = "1",
-                Value = "2/1"
-            }, new kvc{
-                Key = "c1",
-                Row = "2",
-                Value = "1/2"
-            }, new kvc{
-                Key = "c2",
-                Row = "2",
-                Value = "2/2"
-            } };
-
+            new kvc{ Key = "c1", Row = "1", Value = "1/1" },
+            new kvc{ Key = "c2", Row = "1", Value = "2/1" },
+            //new kvc{ Key = "c2", Row = "1", Value = "2/1" }, adding this shuld throw an error
+            new kvc{ Key = "c1", Row = "2", Value = "1/2" },
+            new kvc{ Key = "c2", Row = "2", Value = "2/2" },
+            };
 
             var test = sources.Pivot(x => x.Key, x => x.Row, x => x.Value).ToList();
 
-            Assert.Equal((test[0] as dynamic).c1 , "1/1");
-            Assert.Equal((test[1] as dynamic).c2 , "2/2");
+            Assert.Equal((test[0] as dynamic).c1, "1/1");
+            Assert.Equal((test[1] as dynamic).c2, "2/2");
 
         }
 

@@ -9,14 +9,22 @@
     <Description>Utilities for the DynamicTypes Libary</Description>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Discrepantia/DynamicTypes</RepositoryUrl>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <Authors>Robin Peters</Authors>
     <Copyright>Robin Peters</Copyright>
     <PackageProjectUrl>https://github.com/Discrepantia/DynamicTypes</PackageProjectUrl>
     <PackageIcon>DynamicTypesimg.png</PackageIcon>
     <PackageTags>reflection;runtimetypes;dynamictypes</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\license.txt" Link="license.txt">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </EmbeddedResource>
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\DynamicTypesimg.png">

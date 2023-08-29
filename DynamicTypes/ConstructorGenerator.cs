@@ -30,7 +30,7 @@ namespace DynamicTypes
         /// <summary>
         /// IL generator for the method
         /// </summary>
-        public Action<ILGenerator> Generator { get; set; }
+        public Action<ILGenerator>? Generator { get; set; }
 
         /// <summary>
         /// Defines if the Constructor is the static Constructor
@@ -41,6 +41,7 @@ namespace DynamicTypes
 
         public ConstructorGenerator(bool isStatic = false)
         {
+            IsStatic = isStatic;
         }
 
         public ConstructorGenerator(params PaarmeterDecriptor[] parameter) : this(parameter, null)
@@ -48,7 +49,7 @@ namespace DynamicTypes
             
         }
 
-        public ConstructorGenerator(PaarmeterDecriptor[] parameter, Action<ILGenerator> generator) : base(null)
+        public ConstructorGenerator(PaarmeterDecriptor[] parameter, Action<ILGenerator>? generator) : base(null)
         {
 
             ParmeterDecriptors = parameter ?? Array.Empty<PaarmeterDecriptor>();

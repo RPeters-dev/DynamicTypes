@@ -1,22 +1,37 @@
 ﻿using System.Reflection;
+using System.Text;
 
 namespace DynamicTypes.Utilities.Data
 {
-    public class PivotRowBase : IPivotChange
+    public abstract class PivotRowBase : IPivotRow, IPivotRowInfo
     {
-        TypeGenerator IPivotChange.GeneratorSource { get; set; }
-        MemberInfo IPivotChange.ValueMember { get; set; }
+        public IPivotRowInfo RowDetails => this;
 
-        Dictionary<string, object> IPivotChange.SourceItems { get; set; }
+        public TypeGenerator GeneratorSource { get; set; }
+        public MemberInfo GetValueMember { get; set; }
+        public MemberInfo SetValueMember { get; set; }
+        public IDictionary<string, object> SourceItems { get; set; }
 
+        /// <inheritdoc/>
         public void Set(string keyX, object value)
         {
-            (this as IPivotChange).ValueMember.InvokeSet((this as IPivotChange).SourceItems[keyX], value);
+            RowDetails.SetValueMember.InvokeSet(RowDetails.SourceItems[keyX], value);
         }
 
+        /// <inheritdoc/>
         public object? Get(string keyX)
         {
-            return (this as IPivotChange).ValueMember.InvokeGet((this as IPivotChange).SourceItems[keyX]);
+            return RowDetails.GetValueMember.InvokeGet(RowDetails.SourceItems[keyX]);
+        }
+
+        public override string ToString()
+        {
+            return ((IPivotRow)this).ToString(new StringBuilder());
+        }
+
+        public virtual string ToString(StringBuilder sb)
+        {
+            return GetType().ToString();
         }
     }
 }

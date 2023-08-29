@@ -33,15 +33,15 @@
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
-    <EmbeddedResource Include="..\DynamicTypesimg.png">
+    <EmbeddedResource Include="..\DynamicTypesimg.png" Link="%28PackageRescources%29\DynamicTypesimg.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\license.txt">
+    <EmbeddedResource Include="..\license.txt" Link="%28PackageRescources%29\license.txt">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </EmbeddedResource>
-    <None Include="..\README.md">
+    <None Include="..\README.md" Link="%28PackageRescources%29\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
